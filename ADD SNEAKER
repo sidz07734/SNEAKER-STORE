@@ -1,0 +1,149 @@
+package CarMan;
+
+import java.awt.EventQueue;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+import javax.swing.JLabel;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
+import java.awt.event.ActionEvent;
+import javax.swing.JOptionPane;
+import java.awt.Color;
+import java.awt.Font;
+
+public class addSneaker extends JFrame {
+
+	private static final long serialVersionUID = 1L;
+	private JPanel contentPane;
+	private JTextField medi_name;
+	private JTextField quantity;
+	private JTextField cost;
+	private JTextField sizeField;
+
+	/**
+	 * Launch the application.
+	 */
+	public static void addScreen() {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					addSneaker frame = new addSneaker();
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the frame.
+	 */
+	public addSneaker() {
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 450, 356);
+		contentPane = new JPanel();
+		contentPane.setBackground(new Color(121, 121, 121));
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+
+		setContentPane(contentPane);
+		contentPane.setLayout(null);
+		
+		JLabel lblNewLabel = new JLabel("WHAT WOULD YOU LIKE TO ADD?");
+		lblNewLabel.setBounds(87, 19, 357, 16);
+		lblNewLabel.setFont(new Font("Lucida Grande", Font.PLAIN, 16));
+		contentPane.add(lblNewLabel);
+		
+		medi_name = new JTextField();
+		medi_name.setBounds(225, 72, 130, 26);
+		contentPane.add(medi_name);
+		medi_name.setColumns(10);
+		
+		quantity = new JTextField();
+		quantity.setBounds(225, 147, 130, 26);
+		contentPane.add(quantity);
+		quantity.setColumns(10);
+		
+		JLabel lblNewLabel_1 = new JLabel("SHOE NAME");
+		lblNewLabel_1.setBounds(71, 76, 130, 16);
+		lblNewLabel_1.setForeground(new Color(66, 66, 66));
+		lblNewLabel_1.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
+		contentPane.add(lblNewLabel_1);
+		
+		JLabel lblNewLabel_2 = new JLabel("QUANTITY");
+		lblNewLabel_2.setBounds(71, 151, 97, 16);
+		lblNewLabel_2.setForeground(new Color(66, 66, 66));
+		lblNewLabel_2.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
+		contentPane.add(lblNewLabel_2);
+		
+		cost = new JTextField();
+		cost.setBounds(225, 110, 130, 26);
+		contentPane.add(cost);
+		cost.setColumns(10);
+		
+		JButton addData = new JButton("ADD DATA ");
+		addData.setBounds(159, 254, 117, 29);
+		addData.setForeground(new Color(66, 66, 66));
+		addData.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
+		addData.addActionListener(new ActionListener() 
+			{
+			public void actionPerformed(ActionEvent e) 
+			{
+				String medi = medi_name.getText();
+				int i = Integer.parseInt(quantity.getText());
+				int Cost = Integer.parseInt(cost.getText());
+				int size = Integer.parseInt(sizeField.getText());
+				try
+				{
+					Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/sneaker", "root", "project@123");
+					String query = "insert into shoes (name,quantity,size,cost) values('" + medi + "'," + quantity.getText() +","+ sizeField.getText()+", "+ cost.getText()+" )" ;
+					Statement sta = conn.createStatement();
+					int x = sta.executeUpdate(query);
+					if (x==0)
+							{
+								JOptionPane.showMessageDialog(addData,"error");
+								
+							}
+					else
+					{
+						JOptionPane.showMessageDialog(addData,"data added successfully");
+					}
+					conn.close();
+				}
+				catch (Exception exception)
+				{
+					exception.printStackTrace();
+				}
+			
+				}
+			
+			
+		});
+		contentPane.add(addData);
+		
+		JLabel lblNewLabel_3 = new JLabel("COST");
+		lblNewLabel_3.setBounds(71, 114, 61, 16);
+		lblNewLabel_3.setForeground(new Color(66, 66, 66));
+		lblNewLabel_3.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
+		contentPane.add(lblNewLabel_3);
+		
+		JLabel lblNewLabel_4 = new JLabel("SIZE (UK)");
+		lblNewLabel_4.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
+		lblNewLabel_4.setForeground(new Color(66, 66, 66));
+		lblNewLabel_4.setBounds(71, 188, 61, 16);
+		contentPane.add(lblNewLabel_4);
+		
+		sizeField = new JTextField();
+		sizeField.setBounds(225, 185, 130, 26);
+		contentPane.add(sizeField);
+		sizeField.setColumns(10);
+		
+		
+	}
+}
