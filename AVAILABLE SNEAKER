@@ -1,0 +1,126 @@
+package CarMan;
+
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+import java.awt.Color;
+import javax.swing.JLabel;
+import java.awt.Font;
+import javax.swing.JTextField;
+import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.awt.event.ActionEvent;
+
+public class availSneaker extends JFrame {
+
+	private static final long serialVersionUID = 1L;
+	private JPanel contentPane;
+	private JTextField textField;
+	private JTextField sizeField;
+
+	/**
+	 * Launch the application.
+	 */
+	public static void displayScreen() {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					availSneaker frame = new availSneaker();
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the frame.
+	 */
+	public availSneaker() {
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 450, 300);
+		contentPane = new JPanel();
+		contentPane.setBackground(new Color(121, 121, 121));
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+
+		setContentPane(contentPane);
+		contentPane.setLayout(null);
+		
+		JLabel lblNewLabel = new JLabel("STOCK OF WHICH SHOE WOULD YOU LIKE TO KNOW");
+		lblNewLabel.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
+		lblNewLabel.setBounds(33, 17, 397, 16);
+		contentPane.add(lblNewLabel);
+		
+		textField = new JTextField();
+		textField.setBounds(134, 58, 167, 26);
+		contentPane.add(textField);
+		textField.setColumns(10);
+		
+		JLabel lblNewLabel_1 = new JLabel("");
+		lblNewLabel_1.setBounds(45, 219, 354, 16);
+		contentPane.add(lblNewLabel_1);
+		
+		JButton btnNewButton = new JButton("SHOW");
+		btnNewButton.addActionListener(new ActionListener() 
+		{
+			public void actionPerformed(ActionEvent e) 
+			{ 
+				String medi_name = textField.getText();
+				int size = Integer.parseInt(sizeField.getText());
+				
+				String url = "jdbc:mysql://localhost:3306/sneaker";
+		        String username = "root";
+		        String password = "project@123";
+
+		        try (Connection conn = DriverManager.getConnection(url, username, password)) 
+		        {
+		            String sql = ("SELECT name, quantity FROM shoes WHERE name = '" + medi_name + "' AND size = '" + size + "'");
+;
+		            PreparedStatement pstmt = conn.prepareStatement(sql);
+		            ResultSet rs = pstmt.executeQuery();
+		            if (rs.next()) 
+		            {
+		            int quantity = rs.getInt("quantity");
+		            lblNewLabel_1.setText("currently\t " + quantity + "\tof\t" + medi_name + "\tavailable in size\t"+size);
+		            }
+		            else
+		            {
+		            	lblNewLabel_1.setText("No medicine found with name " + medi_name);
+		            }
+		        conn.close();
+		        }
+		        catch (SQLException ex) 
+		        {
+		            ex.printStackTrace();
+		        }
+			}
+		
+			
+		});
+		btnNewButton.setBounds(161, 157, 117, 29);
+		contentPane.add(btnNewButton);
+		
+		sizeField = new JTextField();
+		sizeField.setBounds(134, 96, 167, 26);
+		contentPane.add(sizeField);
+		sizeField.setColumns(10);
+		
+		JLabel lblNewLabel_2 = new JLabel("SHOE NAME");
+		lblNewLabel_2.setForeground(new Color(66, 66, 66));
+		lblNewLabel_2.setBounds(24, 63, 98, 16);
+		contentPane.add(lblNewLabel_2);
+		
+		JLabel lblNewLabel_3 = new JLabel("SIZE");
+		lblNewLabel_3.setForeground(new Color(66, 66, 66));
+		lblNewLabel_3.setBounds(24, 101, 61, 16);
+		contentPane.add(lblNewLabel_3);
+	}
+}
