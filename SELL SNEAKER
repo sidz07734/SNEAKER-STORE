@@ -1,0 +1,215 @@
+package CarMan;
+
+import java.util.ArrayList;
+
+
+import java.util.HashMap;
+
+import java.util.Map;
+import java.util.Set;
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.Statement;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import javax.swing.JComboBox;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+import javax.swing.JButton;
+import java.awt.Color;
+
+
+public class sellSneaker extends JFrame 
+{
+
+    private JPanel contentPane;
+    private JTextField txtQuantity;
+
+    // Define costs of each medicine
+    ArrayList<String> shoeNames = new ArrayList<>();
+    
+    private JTextField textField;
+    /**
+     * Create the frame.
+     */
+    public sellSneaker() 
+    {
+       
+
+        setTitle("INVOICE");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setBounds(100, 100, 350, 271);
+        contentPane = new JPanel();
+        contentPane.setBackground(new Color(121, 121, 121));
+        contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+        setContentPane(contentPane);
+
+        JComboBox<String> comboBoxSneaker = new JComboBox<>();
+        comboBoxSneaker.setBounds(147, 25, 150, 20);
+        String url = "jdbc:mysql://localhost:3306/sneaker";
+        String username = "root";
+        String password = "project@123";
+
+        try (Connection conn = DriverManager.getConnection(url, username, password)) 
+        {
+            String sql = "SELECT DISTINCT name FROM shoes";
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) 
+            {
+                String name = rs.getString("name");
+                shoeNames.add(name);
+            }
+        } catch (SQLException ex) 
+        {
+            ex.printStackTrace();
+        }
+
+        // Populate JComboBox with medicine names
+        for (String name : shoeNames) 
+        {
+        	comboBoxSneaker.addItem(name);
+        }
+        contentPane.setLayout(null);
+
+        
+        
+        
+        contentPane.add(comboBoxSneaker);
+
+        JLabel lblMedicine = new JLabel("SNEAKER");
+        lblMedicine.setBounds(30, 28, 70, 14);
+        lblMedicine.setForeground(new Color(66, 66, 66));
+        contentPane.add(lblMedicine);
+
+        JLabel lblQuantity = new JLabel("QUANTITY");
+        lblQuantity.setBounds(30, 63, 70, 14);
+        lblQuantity.setForeground(new Color(66, 66, 66));
+        contentPane.add(lblQuantity);
+
+        txtQuantity = new JTextField();
+        txtQuantity.setBounds(147, 60, 130, 20);
+        contentPane.add(txtQuantity);
+        txtQuantity.setColumns(10);
+
+        JLabel lblTotalBill = new JLabel("");
+        lblTotalBill.setBounds(30, 197, 300, 14);
+        contentPane.add(lblTotalBill);
+
+        JButton calculate = new JButton("Calculate");
+        calculate.setBounds(147, 162, 89, 23);
+        calculate.setForeground(new Color(66, 66, 66));
+        calculate.addActionListener(new ActionListener() 
+        {
+            public void actionPerformed(ActionEvent e) 
+            {
+            	
+            	String medi = (String) comboBoxSneaker .getSelectedItem().toString();
+				int i = Integer.parseInt(txtQuantity.getText());
+				int size = Integer.parseInt( textField.getText());
+				
+				
+				try
+				{
+					Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/sneaker", "root", "project@123");
+					String query =("UPDATE shoes SET quantity = quantity - " + txtQuantity.getText() + " WHERE name = '" + medi + "' AND size = '" + size + "'");
+ 
+					Statement sta =  conn.createStatement();
+					int x =  sta.executeUpdate(query);
+					if (x==0)
+							{
+								JOptionPane.showMessageDialog(calculate,"error");
+		  						
+							}
+					else
+					{
+						JOptionPane.showMessageDialog(calculate,"data added successfully");
+					}
+					
+	                
+	                	String SQL = ("SELECT cost FROM shoes where name like '"+ medi +"'");
+	                    PreparedStatement state = conn.prepareStatement(SQL);
+	                    
+	                    ResultSet RS = state.executeQuery();
+	                    
+	                    if (RS.next()) 
+	                    {
+	                    	int cost = RS.getInt("cost");
+	                        int totalCost = cost * i;
+	                        
+	                        lblTotalBill.setText("Total bill for " + i + " " + medi + " is " + totalCost + " Rupees");
+	                    } else {
+	                        lblTotalBill.setText("No shoe found with name " + medi);
+	                    }
+	                    
+	                        
+	                    
+	                    
+	                
+	        
+				   conn.close();
+					
+				}
+				
+				catch (Exception exception)
+				{
+					exception.printStackTrace();
+				}
+			
+				
+            	
+                
+            }
+            
+
+            
+        });
+        contentPane.add(calculate);
+        
+        JLabel lblNewLabel = new JLabel("SIZE (UK)");
+        lblNewLabel.setForeground(new Color(66, 66, 66));
+        lblNewLabel.setBounds(30, 102, 61, 16);
+        contentPane.add(lblNewLabel);
+        
+        textField = new JTextField();
+        textField.setBounds(147, 97, 130, 26);
+        contentPane.add(textField);
+        textField.setColumns(10);
+    }
+
+        
+
+
+
+      public static void sellSneakerScreen() 
+    {
+        EventQueue.invokeLater(new Runnable() 
+        {
+            public void run() 
+            {
+                try 
+                {
+                    sellSneaker frame = new sellSneaker();
+                    frame.setVisible(true);
+                } catch (Exception e) 
+                {
+                    e.printStackTrace();
+                }
+            }
+        });
+    
+    }
+}
